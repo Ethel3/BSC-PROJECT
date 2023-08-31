@@ -1,8 +1,8 @@
-// controllers/userController.mjs
 import pool from '../dbConfig.mjs';
 
-export const createUser = async (req, res) => {
+export const createUser = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { username, age, email } = req.body;
     const query = `
       INSERT INTO users (username, age, email)
@@ -11,13 +11,16 @@ export const createUser = async (req, res) => {
     `;
     const values = [username, age, email];
     const result = await pool.query(query, values);
-    res.json(result.rows[0]);
+    res.json({
+      "message": "User created successfully.",
+      "user": result.rows[0]
+    });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred.' });
+    next(error);
   }
 };
 
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { username, age, email } = req.body;
@@ -29,13 +32,16 @@ export const updateUser = async (req, res) => {
     `;
     const values = [username, age, email, id];
     const result = await pool.query(query, values);
-    res.json(result.rows[0]);
+    res.json({
+      "message": "User updated successfully.",
+      "user": result.rows[0]
+    });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred.' });
+    next(error);
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const query = `
@@ -46,18 +52,21 @@ export const deleteUser = async (req, res) => {
     await pool.query(query, values);
     res.json({ message: 'User deleted successfully.' });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred.' });
+   next(error);
   }
 };
 
-export const listUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
   try {
     const query = `
       SELECT * FROM users;
     `;
     const result = await pool.query(query);
-    res.json(result.rows);
+    res.json({
+      "message": "Users retrieved  successfully.",
+      "user": result.rows[0]
+    });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred.' });
+    next(error);
   }
 };
