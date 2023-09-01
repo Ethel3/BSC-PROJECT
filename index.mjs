@@ -4,6 +4,7 @@ import { createRequire } from 'module';
 // import connectToDb from './dbConfig.mjs';
 import errorHandler from './middleware/errorHandler.js';
 import router from './routes/user.routes.js';
+import routes from './routes/game.routes.js';
 
 const require = createRequire(import.meta.url)
 require('dotenv').config()
@@ -12,6 +13,7 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/user", router);
+app.use("/api/game", routes);
 
 app.use(errorHandler)
 
