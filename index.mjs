@@ -1,13 +1,10 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import { createRequire } from 'module';
-// import connectToDb from './dbConfig.mjs';
 import errorHandler from './middleware/errorHandler.js';
 import router from './routes/user.routes.js';
 
 const require = createRequire(import.meta.url)
 require('dotenv').config()
-// connectToDb()
 const app = express();
 app.use(express.json());
 
