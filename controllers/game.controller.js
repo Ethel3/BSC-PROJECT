@@ -2,30 +2,30 @@ import pool from '../dbConfig.mjs';
 
 export const createGame = async (req, res, next) => {
   try {
-    const { title, description, published_date } = req.body;
+    const { title, description, publisher_date } = req.body;
     const query = `
-      INSERT INTO games_schema.games (title, description, published_date)
+      INSERT INTO games (title, description, publisher_date)
       VALUES ($1, $2, $3)
       RETURNING *;
     `;
-    const values = [title, description, published_date];
+    const values = [title, description, publisher_date];
     const result = await pool.query(query, values);
     res.json({
-        "message": "Game created successfully.",
-        "game": result.rows[0]
-      });
-    } catch (error) {
-      next(error);
-    }
+      "message": "game created successfully.",
+      "game": result.rows[0]
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const updateGame = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { title, description, published_date } = req.body;
+    const { title, description, publisher_date } = req.body;
 
     const checkQuery = `
-      SELECT * FROM games_schema.games
+      SELECT * FROM games
       WHERE id = $1;
     `;
     const checkValues = [id];
@@ -36,20 +36,20 @@ export const updateGame = async (req, res, next) => {
     }
 
     const query = `
-      UPDATE games_schema.games
-      SET title = $1, description = $2, published_date = $3
+      UPDATE games
+      SET title = $1, description = $2, publisher_date = $3
       WHERE id = $4
       RETURNING *;
     `;
-    const values = [title, description, published_date, id];
+    const values = [title, description, publisher_date, id];
     const result = await pool.query(query, values);
     res.json({
-        "message": "Game Updated successfully.",
-        "game": result.rows[0]
-      });
-    } catch (error) {
-      next(error);
-    }
+      "message": "Game updated successfully.",
+      "game": result.rows[0]
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const deleteGame = async (req, res, next) => {
@@ -57,7 +57,7 @@ export const deleteGame = async (req, res, next) => {
     const { id } = req.params;
 
     const checkQuery = `
-      SELECT * FROM games_schema.games
+      SELECT * FROM games
       WHERE id = $1;
     `;
     const checkValues = [id];
@@ -68,31 +68,31 @@ export const deleteGame = async (req, res, next) => {
     }
 
     const query = `
-      DELETE FROM games_schema.games
+      DELETE FROM games
       WHERE id = $1;
     `;
     const values = [id];
     await pool.query(query, values);
     res.json({
-        "message": "Game deleted successfully.",
-        "game": result.rows[0]
-      });
-    } catch (error) {
-      next(error);
-    }
+      "message": "Game deleted successfully.",
+      "game": result.rows[0]
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getGames = async (req, res, next) => {
   try {
     const query = `
-      SELECT * FROM games_schema.games;
+      SELECT * FROM games;
     `;
     const result = await pool.query(query);
     res.json({
-        "message": "Games retrieved successfully.",
-        "games": result.rows 
-      });
-    } catch (error) {
-      next(error);
-    }
+      "message": "Game retrived successfully.",
+      "game": result.rows
+    });
+  } catch (error) {
+    next(error);
+  }
 };
