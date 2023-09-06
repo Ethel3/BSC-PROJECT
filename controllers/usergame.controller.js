@@ -11,8 +11,8 @@ export const createUserGame = async (req, res, next) => {
     const values = [user_id, game_id, play_time];
     const result = await pool.query(query, values);
     res.json({
-        "message": "usergame created successfully.",
-        "usergame": result.rows[0]
+        "message": "user game relationship created successfully.",
+        "data": result.rows[0]
       });
     } catch (error) {
       next(error);
@@ -26,8 +26,8 @@ export const getUserGames = async (req, res, next) => {
     `;
     const result = await pool.query(query);
     res.json({
-        "message": "All usergame retrieved successfully.",
-        "usergame": result.rows
+        "message": "All user game relationships retrieved successfully.",
+        "data": result.rows
       });
     } catch (error) {
       next(error);
@@ -48,8 +48,8 @@ export const updateUserGame = async (req, res, next) => {
     const values = [play_time, id];
     const result = await pool.query(query, values);
     res.json({
-        "message": "usergame created successfully.",
-        "usergame": result.rows[0]
+        "message": "user game relationship updated successfully.",
+        "data": result.rows[0]
       });
     } catch (error) {
       next(error);
@@ -67,8 +67,8 @@ export const deleteUserGame = async (req, res, next) => {
     const values = [id];
     await pool.query(query, values);
     res.json({
-        "message": "usergame deleted successfully.",
-        "usergame": result.rows[0]
+        "message": "user game relationship deleted successfully.",
+        "data": result.rows[0]
       });
     } catch (error) {
       next(error);
