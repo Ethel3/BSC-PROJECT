@@ -12,7 +12,7 @@ export const createUser = async (req, res, next) => {
     const result = await pool.query(query, values);
     res.json({
       "message": "User created successfully.",
-      "user": result.rows[0]
+      "data": result.rows[0]
     });
   } catch (error) {
     next(error);
@@ -46,7 +46,7 @@ export const updateUser = async (req, res, next) => {
 
     res.json({
       message: 'User updated successfully.',
-      user: result.rows[0]
+      "data": result.rows[0]
     });
   } catch (error) {
     next(error);
@@ -89,7 +89,7 @@ export const getUsers = async (req, res, next) => {
     const result = await pool.query(query);
     res.json({
       "message": "Users retrieved successfully.",
-      "users": result.rows 
+      "data": result.rows 
     });
   } catch (error) {
     next(error);

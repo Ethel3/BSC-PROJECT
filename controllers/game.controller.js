@@ -12,7 +12,7 @@ export const createGame = async (req, res, next) => {
     const result = await pool.query(query, values);
     res.json({
       "message": "game created successfully.",
-      "game": result.rows[0]
+      "data": result.rows[0]
     });
   } catch (error) {
     next(error);
@@ -45,7 +45,7 @@ export const updateGame = async (req, res, next) => {
     const result = await pool.query(query, values);
     res.json({
       "message": "Game updated successfully.",
-      "game": result.rows[0]
+      "data": result.rows[0]
     });
   } catch (error) {
     next(error);
@@ -75,7 +75,7 @@ export const deleteGame = async (req, res, next) => {
     await pool.query(query, values);
     res.json({
       "message": "Game deleted successfully.",
-      "game": result.rows[0]
+      "data": result.rows[0]
     });
   } catch (error) {
     next(error);
@@ -90,7 +90,7 @@ export const getGames = async (req, res, next) => {
     const result = await pool.query(query);
     res.json({
       "message": "Game retrived successfully.",
-      "game": result.rows
+      "data": result.rows
     });
   } catch (error) {
     next(error);
