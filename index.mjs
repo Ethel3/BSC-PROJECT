@@ -3,6 +3,7 @@ import { createRequire } from 'module';
 import errorHandler from './middleware/errorHandler.js';
 import router from './routes/user.routes.js';
 import routes from './routes/game.routes.js';
+import userGameRoutes from './routes/usergame.routes.js';
 
 const require = createRequire(import.meta.url)
 require('dotenv').config()
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use("/api/user", router);
 app.use("/api/game", routes)
+app.use("/api/usergame", userGameRoutes)
 app.use(errorHandler)
 
 const PORT = process.env.SERVER_PORT;
