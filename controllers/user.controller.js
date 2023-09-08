@@ -1,4 +1,5 @@
 import pool from '../dbConfig.mjs';
+import jwt from 'jsonwebtoken';
 
 export const createUser = async (req, res, next) => {
   try {
@@ -8,6 +9,16 @@ export const createUser = async (req, res, next) => {
       VALUES ($1, $2, $3)
       RETURNING *;
     `;
+  jwt.sign(
+    JWT_SECRET,
+    { expiresIn: 360000 },
+    (err, token) => {
+      if (err) throw err;
+      res.json({ token });
+    }
+  );
+
+
     const values = [username, age, email];
     const result = await pool.query(query, values);
     res.json({
