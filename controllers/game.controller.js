@@ -1,5 +1,9 @@
 import pool from '../dbConfig.mjs';
 
+
+/*
+//TODO: Only allow admins to create games
+*/
 export const createGame = async (req, res, next) => {
   try {
     const { title, description, publisher_date } = req.body;
@@ -19,6 +23,9 @@ export const createGame = async (req, res, next) => {
   }
 };
 
+/*
+//TODO: Only allow admins to update games
+*/
 export const updateGame = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -52,6 +59,9 @@ export const updateGame = async (req, res, next) => {
   }
 };
 
+/*
+//TODO: Only allow admins to delete games
+*/
 export const deleteGame = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -64,7 +74,7 @@ export const deleteGame = async (req, res, next) => {
     const checkResult = await pool.query(checkQuery, checkValues);
 
     if (checkResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Game not found.' });
+      return res.status(404).json({ error: 'Game requested not found.' });
     }
 
     const query = `
@@ -81,6 +91,7 @@ export const deleteGame = async (req, res, next) => {
     next(error);
   }
 };
+
 
 export const getGames = async (req, res, next) => {
   try {

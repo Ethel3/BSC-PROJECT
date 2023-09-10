@@ -9,21 +9,19 @@ export const createUser = async (req, res, next) => {
       VALUES ($1, $2, $3)
       RETURNING *;
     `;
-  jwt.sign(
-    JWT_SECRET,
-    { expiresIn: 360000 },
-    (err, token) => {
-      if (err) throw err;
-      res.json({ token });
-    }
-  );
-
-
     const values = [username, age, email];
     const result = await pool.query(query, values);
+    token = jwt.sign(
+      {
+        id: result.rows[0].id
+      },
+      process.env("SECRET"),
+      { expiresIn: 360000 },
+    );
     res.json({
       "message": "User created successfully.",
-      "data": result.rows[0]
+      "data": result.rows[0],
+      "token": token
     });
   } catch (error) {
     next(error);
@@ -34,6 +32,10 @@ export const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { username, age, email } = req.body;
+
+    if (req.id != id){
+      return res.status(401).json({message: 'User is not authorized to perform this operation'})
+    }
 
     const userExistsQuery = `
       SELECT * FROM users
@@ -67,7 +69,9 @@ export const updateUser = async (req, res, next) => {
 export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-
+    if (req.id != id){
+      return res.status(401).json({message: 'User is not authorized to access this resource'})
+    }
     const userExistsQuery = `
       SELECT * FROM users
       WHERE id = $1;
@@ -92,6 +96,9 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
+/*
+This route is not an authorized route by design
+*/
 export const getUsers = async (req, res, next) => {
   try {
     const query = `

@@ -3,6 +3,11 @@ import pool from '../dbConfig.mjs';
 export const createUserGame = async (req, res, next) => {
   try {
     const { user_id, game_id, play_time } = req.body;
+    if(req.id !=  user_id){
+        return res.json({
+          "message": "User is not authorized to perform this operation"
+        })
+    }
     const query = `
       INSERT INTO usergame (user_id, game_id, play_time)
       VALUES ($1, $2, $3)
@@ -38,6 +43,11 @@ export const updateUserGame = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { play_time } = req.body;
+    if(req.id !=  user_id){
+      return res.json({
+        "message": "User is not authorized to perform this operation"
+      })
+  }
 
     const query = `
       UPDATE usergame
@@ -59,7 +69,11 @@ export const updateUserGame = async (req, res, next) => {
 export const deleteUserGame = async (req, res, next) => {
   try {
     const { id } = req.params;
-
+    if(req.id !=  user_id){
+      return res.json({
+        "message": "User is not authorized to perform this operation"
+      })
+  }
     const query = `
       DELETE FROM usergame
       WHERE id = $1;
