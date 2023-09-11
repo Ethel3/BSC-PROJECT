@@ -1,13 +1,21 @@
 import pool from '../dbConfig.mjs';
 
-
+// check if the user is an admin
+const isAdmin = (req, res, next)=> {
+  if (req.user && req.user.current_user.role === 'admin') {
+    return next();
+  } else {
+    return res.status(403).json({ message: 'Only admins can perform this operation' });
+  }
+};
 /*
 //TODO: Only allow admins to create games
 */
 export const createGame = async (req, res, next) => {
   try {
     const { title, description, publisher_date } = req.body;
-    const query = `
+    if (req.user && req.user.current_user.role === 'admin') {
+      const query = `
       INSERT INTO games (title, description, publisher_date)
       VALUES ($1, $2, $3)
       RETURNING *;
@@ -18,7 +26,10 @@ export const createGame = async (req, res, next) => {
       "message": "game created successfully.",
       "data": result.rows[0]
     });
-  } catch (error) {
+  } else {
+    return res.status(403).json({ message: 'Only admins can create game' });
+  }
+}catch (error) {
     next(error);
   }
 };
@@ -31,6 +42,7 @@ export const updateGame = async (req, res, next) => {
     const { id } = req.params;
     const { title, description, publisher_date } = req.body;
 
+    if (req.user && req.user.current_user.role === 'admin') {
     const checkQuery = `
       SELECT * FROM games
       WHERE id = $1;
@@ -54,7 +66,10 @@ export const updateGame = async (req, res, next) => {
       "message": "Game updated successfully.",
       "data": result.rows[0]
     });
-  } catch (error) {
+  } else {
+    return res.status(403).json({ message: 'Only admins can update game' });
+  }
+}  catch (error) {
     next(error);
   }
 };
@@ -66,6 +81,7 @@ export const deleteGame = async (req, res, next) => {
   try {
     const { id } = req.params;
 
+    if (req.user && req.user.current_user.role === 'admin') {
     const checkQuery = `
       SELECT * FROM games
       WHERE id = $1;
@@ -87,7 +103,10 @@ export const deleteGame = async (req, res, next) => {
       "message": "Game deleted successfully.",
       "data": result.rows[0]
     });
-  } catch (error) {
+  } else {
+    return res.status(403).json({ message: 'Only admins can delete game' });
+  }
+}  catch (error) {
     next(error);
   }
 };
