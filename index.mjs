@@ -13,6 +13,7 @@ app.use(express.json());
 app.use("/api/user", router);
 app.use("/api/game", routes)
 app.use("/api/usergame", userGameRoutes)
+app.use("/api/user/login", router)
 app.use(errorHandler)
 
 const PORT = process.env.SERVER_PORT;

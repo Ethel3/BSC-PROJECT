@@ -4,25 +4,42 @@ import bcrypt from 'bcrypt';
 
 export const createUser = async (req, res, next) => {
   try {
-    const { username, age, email } = req.body;
+    const { username, age, email, role, password } = req.body;
+
+    if (role && role !== 'user' && role !== 'admin') {
+      return res.status(400).json({ message: 'Invalid role. It must be "user" or "admin".' });
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const query = `
-      INSERT INTO users (username, age, email)
-      VALUES ($1, $2, $3)
+      INSERT INTO users (username, age, email, role, password)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
-    const values = [username, age, email];
+
+    const values = [username, age, email, role || 'user', hashedPassword];
+
     const result = await pool.query(query, values);
-    token = jwt.sign(
+
+    const jwtSecret = process.env.JWT_SECRET;
+
+    const token = jwt.sign(
       {
-        id: result.rows[0].id, role: result.rows[0].role, username: result.rows[0].username, email: result.rows[0].email
+        id: result.rows[0].id,
+        role: result.rows[0].role,
+        username: result.rows[0].username,
+        email: result.rows[0].email,
       },
-      process.env("SECRET"),
-      { expiresIn: 360000 },
+      jwtSecret,
+      { expiresIn: '1h' }
     );
+
     res.json({
-      "message": "User created successfully.",
-      "data": result.rows[0],
-      "token": token
+      message: 'User created successfully.',
+      data: result.rows[0],
+      token: token,
     });
   } catch (error) {
     next(error);
@@ -32,10 +49,10 @@ export const createUser = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { username, age, email } = req.body;
+    const { username, age, email, role, password } = req.body;
 
-    if (req.id != id){
-      return res.status(401).json({message: 'User is not authorized to perform this operation'})
+    if (req.id != id) {
+      return res.status(401).json({ message: 'User is not authorized to perform this operation' });
     }
 
     const userExistsQuery = `
@@ -49,30 +66,41 @@ export const updateUser = async (req, res, next) => {
       return res.status(404).json({ message: 'User not found.' });
     }
 
+    let hashedPassword = userExistsResult.rows[0].password;
+    if (password) {
+      const saltRounds = 10;
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    }
+
     const updateUserQuery = `
       UPDATE users
-      SET username = $1, age = $2, email = $3
-      WHERE id = $4
+      SET username = $1, age = $2, email = $3, role = $4, password = $5
+      WHERE id = $6
       RETURNING *;
     `;
-    const updateUserValues = [username, age, email, id];
+
+    const updateUserValues = [username, age, email, role, hashedPassword, id];
     const result = await pool.query(updateUserQuery, updateUserValues);
 
     res.json({
       message: 'User updated successfully.',
-      "data": result.rows[0]
+      data: result.rows[0],
     });
   } catch (error) {
     next(error);
   }
 };
 
+
+
 export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    if (req.id != id){
-      return res.status(401).json({message: 'User is not authorized to access this resource'})
+
+    if (req.id != id) {
+      return res.status(401).json({ message: 'User is not authorized to access this resource' });
     }
+
     const userExistsQuery = `
       SELECT * FROM users
       WHERE id = $1;
@@ -97,9 +125,6 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
-/*
-This route is not an authorized route by design
-*/
 export const getUsers = async (req, res, next) => {
   try {
     const query = `
@@ -107,19 +132,21 @@ export const getUsers = async (req, res, next) => {
     `;
     const result = await pool.query(query);
     res.json({
-      "message": "Users retrieved successfully.",
-      "data": result.rows 
+      message: 'Users retrieved successfully.',
+      data: result.rows,
     });
   } catch (error) {
     next(error);
   }
 };
 
-//Login route function
-export const loginUser = async (req, res, next) =>{
-  try{
+export const loginUser = async (req, res, next) => {
+  try {
     const { username, password } = req.body;
-    // Find the user by username in your database
+    console.log('Received username:', username);
+    console.log('Received password:', password);
+
+
     const userQuery = `
       SELECT * FROM users
       WHERE username = $1;
@@ -132,23 +159,41 @@ export const loginUser = async (req, res, next) =>{
     }
 
     const user = userResult.rows[0];
-    // Check if the provided password matches the stored hashed password
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const hashedPassword = user.password; 
+
+    
+const adminPassword = 'admin_password';
+
+
+const saltRounds = 10; 
+const hashedAdminPassword = bcrypt.hashSync(adminPassword, saltRounds);
+
+console.log('Hashed Admin Password:', hashedAdminPassword);
+    
+    if (!password) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+   
+    const passwordMatch = await bcrypt.compare(password, hashedPassword);
+    console.log('Password Match:', passwordMatch);
 
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Create an Access Token
+    
+
+   
     const accessToken = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id, username: user.username, role: user.role  },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: '15m' }
     );
 
-    // Create a Refresh Token (optional)
+    
     const refreshToken = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id, username: user.username, role: user.role  },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: '7d' }
     );
@@ -156,10 +201,9 @@ export const loginUser = async (req, res, next) =>{
     res.json({
       message: 'Login successful',
       accessToken,
-      refreshToken, // Optional
+      refreshToken, 
     });
   } catch (error) {
-  next(error);
-}
+    next(error);
+  }
 };
-
