@@ -1,11 +1,10 @@
 import express from 'express';
-import { createGame,updateGame,deleteGame,getGames } from '../controllers/game.controller.js';
+import { createGame, updateGame, deleteGame, getGames } from '../controllers/game.controller.js';
 
-const routes = express.Router();
+const gameRoutes = express.Router();
 
-routes.post('/', createGame);
-routes.put('/:id', updateGame);
-routes.delete('/:id', deleteGame);
-routes.get('/', getGames);
+gameRoutes.route('/').get(getGames).post(createGame)
+gameRoutes.put('/:id', updateGame);
+gameRoutes.delete('/:id', deleteGame);
 
-export default routes;
+export default gameRoutes;
