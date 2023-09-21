@@ -1,19 +1,18 @@
 import express from 'express';
 import { createRequire } from 'module';
 import errorHandler from './middleware/errorHandler.js';
-import router from './routes/user.routes.js';
-import routes from './routes/game.routes.js';
 import userGameRoutes from './routes/usergame.routes.js';
+import userRoutes from './routes/user.routes.js';
+import gameRoutes from './routes/game.routes.js';
 
 const require = createRequire(import.meta.url)
 require('dotenv').config()
 const app = express();
 app.use(express.json());
 
-app.use("/api/user", router);
-app.use("/api/game", routes)
-app.use("/api/usergame", userGameRoutes)
-app.use("/api/user/login", router)
+app.use("/api/user", userRoutes)
+app.use("/api/game", gameRoutes)
+app.use("/api/user/game", userGameRoutes)
 app.use(errorHandler)
 
 const PORT = process.env.SERVER_PORT;

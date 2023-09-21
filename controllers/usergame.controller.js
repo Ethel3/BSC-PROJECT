@@ -1,53 +1,58 @@
 import pool from '../dbConfig.mjs';
 
-export const createUserGame = async (req, res, next) => {
+export const createGameForUser = async (req, res, next) => {
   try {
     const { user_id, game_id, play_time } = req.body;
     if(req.id !=  user_id){
-        return res.json({
+        return res.status(401).json({
           "message": "User is not authorized to perform this operation"
         })
     }
+
     const query = `
       INSERT INTO usergame (user_id, game_id, play_time)
-      VALUES ($1, $2, $3)
-      RETURNING *;
+      VALUES ($1, $2, $3);
     `;
-    const values = [user_id, game_id, play_time];
-    const result = await pool.query(query, values);
-    res.json({
-        "message": "user game relationship created successfully.",
-        "data": result.rows[0]
+    res.status(201).json({
+        "message": "Game created for user successfully.",
       });
     } catch (error) {
       next(error);
     }
 };
 
-export const getUserGames = async (req, res, next) => {
+
+export const getGamesForAllUsers = async (req, res, next) => {
   try {
-    const query = `
-      SELECT * FROM usergame;
+      const query = `
+      SELECT users.*, games.* FROM users JOIN usergame on users.id = usergame.user_id
+      JOIN games ON usergame.game_id=games.id;
     `;
     const result = await pool.query(query);
-    res.json({
-        "message": "All user game relationships retrieved successfully.",
-        "data": result.rows
+    const sanitizedResult = result.rows.map(item => {
+      const { password, ...rest } = item;
+      return rest;
+    });
+    res.status(200).json({
+        "message": "Games for all users retrieved successfully.",
+        "data": sanitizedResult
       });
     } catch (error) {
       next(error);
     }
 };
 
-export const updateUserGame = async (req, res, next) => {
+
+export const updateGameForUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { play_time } = req.body;
+
     if(req.id !=  user_id){
-      return res.json({
+      return res.status(401).json({
         "message": "User is not authorized to perform this operation"
       })
-  }
+    }
 
     const query = `
       UPDATE usergame
@@ -57,32 +62,31 @@ export const updateUserGame = async (req, res, next) => {
     `;
     const values = [play_time, id];
     const result = await pool.query(query, values);
-    res.json({
-        "message": "user game relationship updated successfully.",
-        "data": result.rows[0]
+
+    res.status(200).json({
+        "message": "Playtime for game updated successfully.",
       });
     } catch (error) {
       next(error);
     }
 };
 
-export const deleteUserGame = async (req, res, next) => {
+export const deleteGameForUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     if(req.id !=  user_id){
-      return res.json({
+      return res.status(401).json({
         "message": "User is not authorized to perform this operation"
       })
-  }
+    }
     const query = `
       DELETE FROM usergame
       WHERE id = $1;
     `;
     const values = [id];
     await pool.query(query, values);
-    res.json({
-        "message": "user game relationship deleted successfully.",
-        "data": result.rows[0]
+    res.status(200).json({
+        "message": "Game successfully deleted from user's catalog",
       });
     } catch (error) {
       next(error);

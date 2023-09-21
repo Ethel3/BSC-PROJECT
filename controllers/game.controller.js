@@ -1,6 +1,5 @@
 import pool from '../dbConfig.mjs';
 
-
 /*
 //TODO: Only allow admins to create games
 */
@@ -15,7 +14,7 @@ export const createGame = async (req, res, next) => {
     const values = [title, description, publisher_date];
     const result = await pool.query(query, values);
     res.json({
-      "message": "game created successfully.",
+      "message": "Game created successfully.",
       "data": result.rows[0]
     });
 
@@ -40,7 +39,7 @@ export const updateGame = async (req, res, next) => {
     const checkResult = await pool.query(checkQuery, checkValues);
 
     if (checkResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Game not found.' });
+      return res.status(404).json({ error: 'Game requested not found.' });
     }
 
     const query = `
@@ -93,15 +92,14 @@ export const deleteGame = async (req, res, next) => {
   }
 };
 
-
 export const getGames = async (req, res, next) => {
   try {
     const query = `
       SELECT * FROM games;
     `;
     const result = await pool.query(query);
-    res.json({
-      "message": "Game retrived successfully.",
+    res.status(200).json({
+      "message": "Games retrieved successfully.",
       "data": result.rows
     });
   } catch (error) {

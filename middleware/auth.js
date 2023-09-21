@@ -1,26 +1,22 @@
-import jwt from 'jsonwebtoken';
+import jwt, { decode } from 'jsonwebtoken';
 
+//TODO: Implement refresh token when we have a proper client.
 export const authMiddleware = (req, res, next) => {
-  
-  try {
-    const token = req.headers.authorization;
+    const accessToken = returnTokenFromBearerToken(req.headers.authorization);
+    if (!accessToken) {
+      return res.status(401).json({"message": "Access token might have not been provided"});
+    }
+    
+    try {
+      const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+      req.id = decoded.id;
+      next();
+    } catch (error) {
+        console.error(error)
+        return res.status(400).json({"message": 'Invalid access token'});
+      }
+}
 
-  if (!token) {
-    return res.status(401).json({ message: 'Token missing from authorization header' });
-  }
-
-    const decoded = jwt.verify(token, process.env("SECRET"));
-    req.user = decoded;
-    next();
-  } catch (err) {
-    res.status(401).json({ message: 'User not authorized to access this resource' });
-  }
-};
-// check if the user is an admin
-export const isAdmin = (req, res, next)=> {
-  if (req.user && req.user.role === 'admin') {
-    return next();
-  } else {
-    return res.status(403).json({ message: 'Only admins can perform this operation' });
-  }
-};
+function returnTokenFromBearerToken(bearerToken){
+  return bearerToken.split(" ")[1];
+}
