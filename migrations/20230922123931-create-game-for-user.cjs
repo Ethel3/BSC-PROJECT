@@ -9,13 +9,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
+      user_id: {
         type: Sequelize.INTEGER
       },
-      gameId: {
+      game_id: {
         type: Sequelize.INTEGER
       },
-      playTime: {
+      play_time: {
         type: Sequelize.FLOAT
       },
       createdAt: {
