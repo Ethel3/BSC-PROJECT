@@ -1,25 +1,45 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class GameForUser extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      GameForUser.belongsTo(models.User, {
+        foreignKey: 'user_id', 
+        as: 'user', 
+      });
+      GameForUser.belongsTo(models.Game, {
+        foreignKey: 'game_id', 
+        as: 'game', 
+      });
     }
   }
-  GameForUser.init({
-    user_id: DataTypes.INTEGER,
-    game_id: DataTypes.INTEGER,
-    play_time: DataTypes.FLOAT
-  }, {
-    sequelize,
-    modelName: 'GameForUser',
-  });
+
+  GameForUser.init(
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'User', 
+          key: 'id',
+        },
+      },
+      game_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Game', 
+          key: 'id', 
+        },
+      },
+      play_time: DataTypes.FLOAT,
+    },
+    {
+      sequelize,
+      modelName: 'GameForUser',
+    }
+  );
+
   return GameForUser;
 };
