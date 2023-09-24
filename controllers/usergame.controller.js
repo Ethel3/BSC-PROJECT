@@ -10,7 +10,7 @@ export const createGameForUser = async (req, res, next) => {
     }
 
     const query = `
-      INSERT INTO usergame (user_id, game_id, play_time)
+      INSERT INTO GameForuser (user_id, game_id, play_time)
       VALUES ($1, $2, $3);
     `;
     res.status(201).json({
@@ -25,8 +25,8 @@ export const createGameForUser = async (req, res, next) => {
 export const getGamesForAllUsers = async (req, res, next) => {
   try {
       const query = `
-      SELECT users.*, games.* FROM users JOIN usergame on users.id = usergame.user_id
-      JOIN games ON usergame.game_id=games.id;
+      SELECT users.*, games.* FROM users JOIN GameForUser on users.id = GameForUser.user_id
+      JOIN games ON GameForUser.game_id=games.id;
     `;
     const result = await pool.query(query);
     const sanitizedResult = result.rows.map(item => {
@@ -55,7 +55,7 @@ export const updateGameForUser = async (req, res, next) => {
     }
 
     const query = `
-      UPDATE usergame
+      UPDATE GameForUser
       SET play_time = $1
       WHERE id = $2
       RETURNING *;
@@ -80,7 +80,7 @@ export const deleteGameForUser = async (req, res, next) => {
       })
     }
     const query = `
-      DELETE FROM usergame
+      DELETE FROM GameForUser
       WHERE id = $1;
     `;
     const values = [id];

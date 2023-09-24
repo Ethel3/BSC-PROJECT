@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id', 
         },
       },
-      play_time: DataTypes.FLOAT,
+      play_time: DataTypes.INTEGER,
     },
     {
       sequelize,
