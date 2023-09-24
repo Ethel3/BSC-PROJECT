@@ -12,4 +12,8 @@ Backend project for [this assignment](https://drive.google.com/file/d/1QJW6vOnB-
     * DB_PORT
     * SERVER_PORT
 
-2. Run server with `npm start` in root directory.
+2. Fill your details in `config.json`
+
+3. Run migrations up with `npx sequelize-cli db:migrate`
+
+4. Run server with `npm start` in root directory.
