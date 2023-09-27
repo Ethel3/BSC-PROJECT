@@ -13,7 +13,7 @@ export const createGame = async (req, res, next) => {
     `;
     const values = [title, description, publisher_date];
     const result = await pool.query(query, values);
-    res.json({
+    res.status(200).json({
       "message": "Game created successfully.",
       "data": result.rows[0]
     });

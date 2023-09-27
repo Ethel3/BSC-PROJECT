@@ -11,7 +11,7 @@ module.exports = {
       },
       user_id: {
         type: Sequelize.INTEGER,
-        allowNull: false, // Ensuring the column is not nullable
+        allowNull: false, 
         references: {
           model: 'users', 
           key: 'id',       
@@ -23,22 +23,24 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Games',
+          model: 'games',
           key: 'id',       
         },
         onUpdate: 'CASCADE', 
         onDelete: 'CASCADE'  
       },
       play_time: {
-        type: Sequelize.FLOAT
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       }
     });
     await queryInterface.addConstraint('GameForUsers', {
@@ -56,7 +58,7 @@ module.exports = {
       type: 'foreign key',
       fields: ['game_id'],
       references: {
-        table: 'Games',
+        table: 'games',
         field: 'id',
       },
       onDelete: 'CASCADE',

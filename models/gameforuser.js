@@ -38,6 +38,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'GameForUser',
+      timestamps: true,
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt',
     }
   );
 

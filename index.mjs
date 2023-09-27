@@ -7,7 +7,7 @@ import gameRoutes from './routes/game.routes.js';
 
 const require = createRequire(import.meta.url)
 require('dotenv').config()
-const app = express();
+export const app = express();
 app.use(express.json());
 
 app.use("/api/user", userRoutes)
