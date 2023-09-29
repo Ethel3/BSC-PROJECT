@@ -21,5 +21,5 @@ describe('UserGame API', () => {
     expect(response.body.message).to.equal('Games for all users retrieved successfully.');
     expect(response.body.data).to.be.an('array');
   });
-  // Write similar tests for other UserGame functionality
+ 
 });
